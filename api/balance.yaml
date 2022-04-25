@@ -1,0 +1,58 @@
+swagger: "2.0"
+info:
+  description: "This is an API server to manage user's balance."
+  version: "1.0.0"
+  title: "Balance API"
+  contact:
+    email: "takehiro.a27@gmail.com"
+host: "sample.com"
+basePath: "/v1"
+schemes:
+  - "https"
+  - "http"
+paths:
+  /balance:
+    post:
+      summary: "change user's balance"
+      description: ""
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Balance "
+          required: true
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/balance"
+      responses:
+        "400":
+          description: "Bad Request"
+        "500":
+          description: "internal Server Error"
+definitions:
+  balance:
+    type: "object"
+    required:
+      - "user_id"
+      - "difference"
+      - "currency_code"
+      - "timestamp"
+    properties:
+      user_id:
+        type: "string"
+      difference:
+        type: "integer"
+        example: -3000
+      currency_code:
+        type: "string"
+        example: "JPY"
+      timestamp:
+        type: "string"
+        example: "2014-12-31 12:31:24 +0900 JST"
+      is_transaction:
+        type: "boolean"
+        example: false
