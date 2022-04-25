@@ -1,5 +1,5 @@
-DBUser: root
+DBUser: *****
 DBPass: *****
-DBName: balance
-DBAddr: TBD
-DBPort: 3306
+DBName: *****
+DBAddr: *****
+DBPort: *****
