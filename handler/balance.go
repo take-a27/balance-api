@@ -3,11 +3,18 @@ package handler
 import (
 	"ARIGATOBANK/domain"
 	"ARIGATOBANK/repository"
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/jinzhu/gorm"
+	"io"
 	"net/http"
 )
+
+type RequestJSON struct {
+	Request []BalanceRequest `json:"request"`
+}
 
 type BalanceRequest struct {
 	UserId        string `json:"user_id"`
@@ -50,14 +57,17 @@ const (
 )
 
 func (b *Balance) Update(c *gin.Context) {
-	balanceRequestList := make([]BalanceRequest, 0)
-	err := c.Bind(balanceRequestList)
+	request := new(RequestJSON)
+	byteData, _ := io.ReadAll(c.Request.Body)
+	err := json.Unmarshal(byteData, request)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{})
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
 	}
 
 	balanceResponseList := make([]*BalanceResponse, 0)
-	for _, balanceRequest := range balanceRequestList {
+	for _, balanceRequest := range request.Request {
 		bo, err := balanceRequest.ToBalanceOperation()
 		if err != nil {
 			balanceResponse := NewBalanceResponse(bo.Id, bo.UserId, fmt.Sprintf("%s", bo.Timestamp), false, err.Error())
@@ -66,7 +76,7 @@ func (b *Balance) Update(c *gin.Context) {
 
 		// check if balance operation is existing
 		checkBO, err := b.DB.GetBalanceOperation(balanceOperationTableName, bo)
-		if err != nil {
+		if !gorm.IsRecordNotFoundError(err) && err != nil {
 			balanceResponse := NewBalanceResponse(bo.Id, bo.UserId, fmt.Sprintf("%s", bo.Timestamp), false, err.Error())
 			balanceResponseList = append(balanceResponseList, balanceResponse)
 		}
@@ -78,9 +88,11 @@ func (b *Balance) Update(c *gin.Context) {
 		// insert balance operation
 		err = b.DB.InsertBalanceOperation(balanceOperationTableName, userBalanceTableName, bo)
 		if err != nil {
-			balanceResponse := NewBalanceResponse(bo.Id, bo.UserId, fmt.Sprintf("%s", bo.Timestamp), true, err.Error())
+			balanceResponse := NewBalanceResponse(bo.Id, bo.UserId, fmt.Sprintf("%s", bo.Timestamp), false, err.Error())
 			balanceResponseList = append(balanceResponseList, balanceResponse)
 		}
+		balanceResponse := NewBalanceResponse(bo.Id, bo.UserId, fmt.Sprintf("%s", bo.Timestamp), true, "inserted successfully")
+		balanceResponseList = append(balanceResponseList, balanceResponse)
 	}
 
 	c.JSON(http.StatusOK, gin.H{

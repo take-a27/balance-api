@@ -5,6 +5,6 @@ type UserBalance struct {
 	Amount int    `json:"amount"`
 }
 
-func NewUserBalance(id string) *UserBalance {
-	return &UserBalance{Id: id}
+func NewUserBalance(userId string) *UserBalance {
+	return &UserBalance{Id: userId, Amount: 0}
 }

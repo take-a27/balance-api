@@ -22,7 +22,7 @@ func NewBalanceOperation(userId string, timestamp string, difference int, isTran
 		return nil, fmt.Errorf("required parameter missing. either of user id, timestamp, difference")
 	}
 
-	parsedTimestamp, err := time.Parse("2014-12-31 12:31:24 +0900 JST", timestamp)
+	parsedTimestamp, err := time.Parse("2006/01/02 15:04:05", timestamp)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse timestamp: %s", err)
 	}

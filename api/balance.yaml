@@ -41,9 +41,11 @@ definitions:
       - "difference"
       - "currency_code"
       - "timestamp"
+      - "is_transaction"
     properties:
       user_id:
         type: "string"
+        example: "ff113166-fe3f-40a1-8c94-c30f4f765568"
       difference:
         type: "integer"
         example: -3000
@@ -52,7 +54,7 @@ definitions:
         example: "JPY"
       timestamp:
         type: "string"
-        example: "2014-12-31 12:31:24 +0900 JST"
+        example: "2006/01/02 15:04:05"
       is_transaction:
         type: "boolean"
         example: false
